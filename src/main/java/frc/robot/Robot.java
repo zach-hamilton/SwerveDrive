@@ -19,16 +19,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
-  private final RobotContainer m_robotContainer;
+  private final RobotContainer robotContainer;
 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   public Robot() {
-    Logger.recordMetadata("ProjectName", "ZachTankDrive2"); // Set a metadata value
+    Logger.recordMetadata("ProjectName", "SwerveDrive "); // Set a metadata value
     Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-    m_robotContainer = new RobotContainer();
+    robotContainer = new RobotContainer();
     Logger.start(); 
   }
 
@@ -58,7 +58,7 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -79,6 +79,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    robotContainer.getTeleCommand().schedule();
   }
 
   /** This function is called periodically during operator control. */

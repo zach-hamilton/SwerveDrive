@@ -4,11 +4,14 @@
 
 package frc.robot.subsystems.SwerveDrive;
 
+import org.littletonrobotics.junction.AutoLog;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public interface ModuleIO {
 
+  @AutoLog
   public static class ModuleIOInputs {
 
   public double driveCurrent = 0;
@@ -22,7 +25,7 @@ public interface ModuleIO {
 
   }
 
-  public default void updateInputs(ModuleIO inputs) {}
+  public default void updateInputs(ModuleIOInputs inputs) {}
 
   public default void setDriveVelocity(AngularVelocity velocity) {}
 

@@ -5,8 +5,13 @@
 package frc.robot.subsystems.SwerveDrive.Constants;
 
 /** Add your docs here. */
-public class DriveConstantsFrontLeft implements DriveConstants {
-    public static final int turnMotorId = 0;
-    public static final int driveMotorId = 0;
-    public static final int cancoderID = 0;
+public class DriveConstantsFrontLeft extends DriveConstants {
+    public DriveConstantsFrontLeft(){
+        turnMotorId = 19;
+        driveMotorId = 20;
+        cancoderID = 21;
+        CANbus = "Drivebase 2025";
+        MagnetSensorOffset = 0.000488;
+    }
+
 }

@@ -5,9 +5,11 @@
 package frc.robot.subsystems.SwerveDrive.Constants;
 
 /** Add your docs here. */
-public interface DriveConstants {
+public class DriveConstants {
 
-    public static final int turnMotorId = 0;
-    public static final int driveMotorId = 0;
-    public static final int cancoderID = 0;
+    public int turnMotorId;
+    public int driveMotorId;
+    public int cancoderID;
+    public String CANbus;
+    public double MagnetSensorOffset;
 }
