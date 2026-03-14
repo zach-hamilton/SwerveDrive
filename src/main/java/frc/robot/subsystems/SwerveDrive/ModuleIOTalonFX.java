@@ -74,7 +74,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnMotorConfig.Slot0.kD = 0.0;
     turnMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     turnMotorConfig.ClosedLoopGeneral.ContinuousWrap = true;
-    turnMotorConfig.Feedback.FeedbackRemoteSensorID = 18;
+    turnMotorConfig.Feedback.FeedbackRemoteSensorID = constants.cancoderID;
     turnMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder; //TODO: update this
 
     driveMotor.getConfigurator().apply(new TalonFXConfiguration());

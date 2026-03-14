@@ -12,6 +12,6 @@ public class DriveConstantsBackRight extends DriveConstants {
         driveMotorId = 11;
         cancoderID = 12;
         CANbus = "Drivebase 2025";
-        MagnetSensorOffset = 0.019287;
+        MagnetSensorOffset = 0.191162;
 }
 }
