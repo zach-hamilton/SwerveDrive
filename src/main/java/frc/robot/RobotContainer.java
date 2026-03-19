@@ -16,6 +16,7 @@ import frc.robot.subsystems.SwerveDrive.Constants.DriveConstantsFrontLeft;
 import frc.robot.subsystems.SwerveDrive.Constants.DriveConstantsFrontRight;
 import frc.robot.commands.Crab;
 import frc.robot.commands.Move;
+import frc.robot.commands.SwerveCommand;
 import frc.robot.subsystems.SwerveDrive.Drivebase;
 import frc.robot.subsystems.SwerveDrive.GyroIO;
 import frc.robot.subsystems.SwerveDrive.GyroIOPigeon;
@@ -23,7 +24,8 @@ import frc.robot.subsystems.SwerveDrive.Module;
 
 
 public class RobotContainer {
-  Joystick joystick;
+  Joystick joystickL;
+  Joystick joystickR;
   Distance wheelRadius;
   Module backLeftModule;
   Module backRightModule;
@@ -41,8 +43,8 @@ public class RobotContainer {
     backRightTalonFX = new ModuleIOTalonFX(new DriveConstantsBackRight());
     frontLeftTalonFX = new ModuleIOTalonFX(new DriveConstantsFrontLeft());
     frontRightTalonFX = new ModuleIOTalonFX(new DriveConstantsFrontRight());
-    joystick = new Joystick(0);
-    
+    joystickL = new Joystick(0);
+    joystickR = new Joystick(1);
     frontLeftModule = new Module(frontLeftTalonFX, 0, wheelRadius);
     frontRightModule = new Module(frontRightTalonFX, 0, wheelRadius);
     backRightModule = new Module(backRightTalonFX, 0, wheelRadius);
@@ -54,7 +56,7 @@ public class RobotContainer {
   } 
 
   public Command getTeleCommand(){
-    return new Crab(drivebase, joystick);
+    return new SwerveCommand(drivebase, joystickL, joystickR);
   }
 
   public Command getAutonomousCommand() {
