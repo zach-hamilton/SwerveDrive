@@ -14,8 +14,6 @@ import frc.robot.subsystems.SwerveDrive.Constants.DriveConstantsBackLeft;
 import frc.robot.subsystems.SwerveDrive.Constants.DriveConstantsBackRight;
 import frc.robot.subsystems.SwerveDrive.Constants.DriveConstantsFrontLeft;
 import frc.robot.subsystems.SwerveDrive.Constants.DriveConstantsFrontRight;
-import frc.robot.commands.Crab;
-import frc.robot.commands.Move;
 import frc.robot.commands.SwerveCommand;
 import frc.robot.subsystems.SwerveDrive.Drivebase;
 import frc.robot.subsystems.SwerveDrive.GyroIO;
@@ -45,12 +43,14 @@ public class RobotContainer {
     frontRightTalonFX = new ModuleIOTalonFX(new DriveConstantsFrontRight());
     joystickL = new Joystick(0);
     joystickR = new Joystick(1);
-    frontLeftModule = new Module(frontLeftTalonFX, 0, wheelRadius);
-    frontRightModule = new Module(frontRightTalonFX, 0, wheelRadius);
-    backRightModule = new Module(backRightTalonFX, 0, wheelRadius);
-    backLeftModule = new Module(backLeftTalonFX, 0, wheelRadius);
-    drivebase = new Drivebase(frontLeftModule, backLeftModule, frontRightModule, backRightModule, gyroIO);
+    frontLeftModule = new Module(frontLeftTalonFX, "frontLeft", 0, wheelRadius);
+    frontRightModule = new Module(frontRightTalonFX, "frontRight", 0, wheelRadius);
+    backRightModule = new Module(backRightTalonFX,"backRight", 0, wheelRadius);
+    backLeftModule = new Module(backLeftTalonFX,"backLeft", 0, wheelRadius);
+    gyroIO = new GyroIOPigeon();
+    drivebase = new Drivebase(frontLeftModule, frontRightModule, backLeftModule, backRightModule, gyroIO);
     
+
 
 
   } 

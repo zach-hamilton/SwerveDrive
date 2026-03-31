@@ -7,6 +7,7 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -25,6 +26,7 @@ public class SwerveCommand extends Command {
   private LinearVelocity joystickLinearVelocityX;
   private LinearVelocity joystickLinearVelocityY;
   private AngularVelocity joystickAngularVelocity;
+
   public SwerveCommand(Drivebase drivebase, Joystick joystickL, Joystick joystickR) {
     this.drivebase = drivebase;
     this.joystickL = joystickL;
@@ -38,9 +40,10 @@ public class SwerveCommand extends Command {
   public void execute() {
 
 
-    joystickLinearVelocityX = MetersPerSecond.of(joystickL.getY()* 2);
-    joystickLinearVelocityY = MetersPerSecond.of(joystickL.getX() * 2);
-    joystickAngularVelocity = RotationsPerSecond.of(joystickR.getX() * 0.1);
+    joystickLinearVelocityX = MetersPerSecond.of(MathUtil.applyDeadband(joystickL.getY(), 0.1) * -0.6);
+    joystickLinearVelocityY = MetersPerSecond.of(MathUtil.applyDeadband(joystickL.getX(), 0.1) * -0.6);
+    joystickAngularVelocity = RotationsPerSecond.of(MathUtil.applyDeadband(joystickR.getX(), 0.1) * -0.01);
+
 
     drivebase.doSwerve(joystickLinearVelocityX, joystickLinearVelocityY, joystickAngularVelocity);
   }

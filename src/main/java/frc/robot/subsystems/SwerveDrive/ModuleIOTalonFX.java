@@ -5,7 +5,13 @@
 package frc.robot.subsystems.SwerveDrive;
 
 import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import java.lang.Math;
+
+import org.opencv.core.RotatedRect;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -18,18 +24,22 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.SwerveCommand;
 import frc.robot.subsystems.SwerveDrive.Constants.DriveConstants;
 
-
 public class ModuleIOTalonFX implements ModuleIO {
-  
+
   private final TalonFX driveMotor;
   private final TalonFX turnMotor;
   private final CANcoder cancoder;
@@ -45,9 +55,13 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Current> turnCurrent;
   private final StatusSignal<Voltage> turnVoltage;
   private final StatusSignal<AngularVelocity> turnVelocity;
+  private final double wheelDiameter;
+  private final double mechanismRatio;
+  private final int turnMotorId;
 
-  
   public ModuleIOTalonFX(DriveConstants constants) {
+    turnMotorId = constants.turnMotorId;
+
     System.out.println("Turn Motor id:" + constants.turnMotorId);
     System.out.println("Drive Motor id:" + constants.driveMotorId);
     System.out.println("Cancoder id:" + constants.cancoderID);
@@ -60,22 +74,27 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     CANcoderConfiguration cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-    cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     cancoderConfig.MagnetSensor.MagnetOffset = constants.MagnetSensorOffset;
 
     TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
-    driveMotorConfig.Slot0.kP = 0.25;
+    driveMotorConfig.Slot0.kP = 0.08498;
     driveMotorConfig.Slot0.kI = 0.0;
     driveMotorConfig.Slot0.kD = 0.0;
-
+    driveMotorConfig.Slot0.kS = 0.12277;
+    driveMotorConfig.Slot0.kV = 0.3;
+    
     TalonFXConfiguration turnMotorConfig = new TalonFXConfiguration();
     turnMotorConfig.Slot0.kP = 100;
     turnMotorConfig.Slot0.kI = 0.0;
-    turnMotorConfig.Slot0.kD = 0.0;
-    turnMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    turnMotorConfig.Slot0.kD = 0.5;
+    turnMotorConfig.Slot0.kS = 0.1;
+    turnMotorConfig.Slot0.kV = 2.66;
+    turnMotorConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    turnMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     turnMotorConfig.ClosedLoopGeneral.ContinuousWrap = true;
     turnMotorConfig.Feedback.FeedbackRemoteSensorID = constants.cancoderID;
-    turnMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder; //TODO: update this
+    turnMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder; // TODO: update this
 
     driveMotor.getConfigurator().apply(new TalonFXConfiguration());
     turnMotor.getConfigurator().apply(new TalonFXConfiguration());
@@ -89,34 +108,47 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveVelocity = driveMotor.getVelocity();
     driveVoltage = driveMotor.getMotorVoltage();
 
-    turnPositionAngle = turnMotor.getPosition();
+    turnPositionAngle = cancoder.getAbsolutePosition();
     turnCurrent = turnMotor.getStatorCurrent();
     turnVelocity = turnMotor.getVelocity();
     turnVoltage = turnMotor.getMotorVoltage();
+
+    wheelDiameter = 0.102;
+    mechanismRatio = 6.12;
+
   }
 
-  
   @Override
-  public void setDriveVelocity(AngularVelocity velocity){
-    driveMotor.setControl(velocityVoltage.withVelocity(velocity));
+  public void setDriveVelocity(LinearVelocity velocity) {
+    AngularVelocity motorRotations = RotationsPerSecond
+        .of(((velocity.in(MetersPerSecond)) / (wheelDiameter * Math.PI)) * mechanismRatio);
+    driveMotor.setControl(velocityVoltage.withVelocity(motorRotations));
+    SmartDashboard.putNumber("rotations per second", motorRotations.in(RotationsPerSecond));
+    SmartDashboard.putNumber("drive motor rotations" + turnMotorId,
+        driveMotor.getVelocity().getValue().in(RotationsPerSecond));
   }
+
   @Override
-  public void setTurnPosition(Angle angleGoal){
-    turnMotor.setControl(positionVoltage.withPosition(angleGoal));
-    SmartDashboard.putNumber("pid output", angleGoal.in(Degree));
-  
+  public void setTurnPosition(Rotation2d angleGoal) {
+    turnMotor.setControl(positionVoltage.withPosition(angleGoal.getMeasure()));
+
   }
+
   @Override
-  public void updateInputs(ModuleIOInputs inputs){
-    BaseStatusSignal.refreshAll(driveCurrent, driveVelocity, drivePositionAngle, driveVoltage, turnVoltage, turnVelocity, turnCurrent, turnPositionAngle);
+  public void updateInputs(ModuleIOInputs inputs) {
+    BaseStatusSignal.refreshAll(driveCurrent, driveVelocity, drivePositionAngle, driveVoltage, turnVoltage,
+        turnVelocity, turnCurrent, turnPositionAngle);
 
     inputs.driveCurrent = driveCurrent.getValueAsDouble();
     inputs.driveVoltage = driveVoltage.getValueAsDouble();
     inputs.drivePosition = drivePositionAngle.getValueAsDouble();
-    inputs.driveVelocity = driveVelocity.getValueAsDouble();
+    inputs.driveVelocity = driveVelocity.getValue();
     inputs.turnCurrent = turnCurrent.getValueAsDouble();
     inputs.turnVoltage = turnVoltage.getValueAsDouble();
-    inputs.turnPosition = turnPositionAngle.getValueAsDouble();
+    inputs.turnPosition = turnPositionAngle.getValue();
     inputs.turnVelocity = turnVelocity.getValueAsDouble();
+
+
   }
+
 }

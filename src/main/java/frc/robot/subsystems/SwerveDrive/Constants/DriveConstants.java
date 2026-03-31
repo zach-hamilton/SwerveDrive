@@ -12,4 +12,5 @@ public class DriveConstants {
     public int cancoderID;
     public String CANbus;
     public double MagnetSensorOffset;
+    public String moduleName;
 }

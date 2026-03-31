@@ -13,7 +13,9 @@ public class DriveConstantsBackLeft extends DriveConstants {
         driveMotorId = 17;
         cancoderID = 18;
         CANbus = "Drivebase 2025";
-        MagnetSensorOffset = -0.463135;
+        // MagnetSensorOffset = -0.463135;
+        MagnetSensorOffset = -0.030273;
+        moduleName = "backLeft";
     }
     
 }

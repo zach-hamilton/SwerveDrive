@@ -4,32 +4,41 @@
 
 package frc.robot.subsystems.SwerveDrive;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
 
 public interface ModuleIO {
 
   @AutoLog
   public static class ModuleIOInputs {
 
-  public double driveCurrent = 0;
-  public double driveVoltage = 0;
-  public double driveVelocity = 0;
-  public double drivePosition = 0;
-  public double turnCurrent = 0;
-  public double turnVoltage = 0;
-  public double turnVelocity = 0;
-  public double turnPosition = 0;
-
-  }
+    public double driveCurrent = 0;
+    public double driveVoltage = 0;
+    public AngularVelocity driveVelocity = RotationsPerSecond.of(0);
+    public double drivePosition = 0;
+    public double turnCurrent = 0;
+    public double turnVoltage = 0;
+    public double turnVelocity = 0;
+    public Angle turnPosition = Degrees.of(0);  
+}
 
   public default void updateInputs(ModuleIOInputs inputs) {}
 
-  public default void setDriveVelocity(AngularVelocity velocity) {}
+  public default void setDriveVelocity(LinearVelocity velocity) {}
 
-  public default void setTurnPosition(Angle angleGoal) {}
+  public default void setTurnPosition(Rotation2d angleGoal) {}
+
+
 
 
 }
