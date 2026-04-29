@@ -28,7 +28,7 @@ public interface ModuleIO {
     public double drivePosition = 0;
     public double turnCurrent = 0;
     public double turnVoltage = 0;
-    public double turnVelocity = 0;
+    public AngularVelocity turnVelocity = RotationsPerSecond.of(0);
     public Angle turnPosition = Degrees.of(0);  
 }
 

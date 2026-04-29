@@ -5,6 +5,7 @@
 package frc.robot.subsystems.SwerveDrive;
 import static edu.wpi.first.units.Units.Degrees;
 
+import org.dyn4j.geometry.Rotatable;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Rotation2d;

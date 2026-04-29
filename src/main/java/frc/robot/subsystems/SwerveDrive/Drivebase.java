@@ -4,27 +4,21 @@
 
 package frc.robot.subsystems.SwerveDrive;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Kilograms;
 
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
-
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.SwerveDrive.GyroIO.GyroIOInputs;
 
 public class Drivebase extends SubsystemBase {
   public Module frontLeftModule;
@@ -40,8 +34,15 @@ public class Drivebase extends SubsystemBase {
   private Translation2d BRPosition = new Translation2d(-11.375, -11.375);
 
   private SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(FLPosition, FRPosition, BLPosition,
-      BRPosition);
+    BRPosition);
 
+  public static final DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default()
+    .withRobotMass(Kilograms.of(30))
+    .withCustomModuleTranslations(getModuleTranslations())
+    .withGyro(COTS.ofPigeon2())
+    .withSwerveModule(COTS.ofMark4i(DCMotor.getKrakenX60Foc(1), DCMotor.getKrakenX60Foc(1), COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof, 3));
+
+    
   public Drivebase(Module frontLeftModule, Module frontRightModule, Module backLeftModule, Module backRightModule,
       GyroIO gyroIO) {
     this.gyroIO = gyroIO;
@@ -76,9 +77,6 @@ public class Drivebase extends SubsystemBase {
     Logger.recordOutput("swerve module optimized", swerveModuleStates);
   }
 
-  public Rotation2d robotAngle() {
-    return gyroInputs.yaw;
-  }
 
   // public void setModuleStates(Angle angleGoal, LinearVelocity velocity) {
   // frontLeftModule.setDriveVelocity(velocity);
@@ -104,6 +102,15 @@ public class Drivebase extends SubsystemBase {
     states[2] = backLeftModule.getState();
     states[3] = backRightModule.getState();
     return states;
+  }
+
+  public static Translation2d[] getModuleTranslations() {
+    return new Translation2d[] {
+      new Translation2d(11.375, 11.375),
+      new Translation2d(11.375, -11.375),
+      new Translation2d(-11.375, 11.375),
+      new Translation2d(-11.375, -11.375),
+    };
   }
 
 }

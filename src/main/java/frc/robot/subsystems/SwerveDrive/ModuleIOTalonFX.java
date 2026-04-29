@@ -146,7 +146,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.turnCurrent = turnCurrent.getValueAsDouble();
     inputs.turnVoltage = turnVoltage.getValueAsDouble();
     inputs.turnPosition = turnPositionAngle.getValue();
-    inputs.turnVelocity = turnVelocity.getValueAsDouble();
+    inputs.turnVelocity = turnVelocity.getValue();
 
 
   }

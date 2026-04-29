@@ -7,11 +7,14 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveDrive.Drivebase;
 import frc.robot.subsystems.SwerveDrive.Module;
@@ -44,6 +47,7 @@ public class SwerveCommand extends Command {
     joystickLinearVelocityY = MetersPerSecond.of(MathUtil.applyDeadband(joystickL.getX(), 0.1) * -0.6);
     joystickAngularVelocity = RotationsPerSecond.of(MathUtil.applyDeadband(joystickR.getX(), 0.1) * -0.01);
 
+    Logger.recordOutput("joystick", joystickLinearVelocityX);
 
     drivebase.doSwerve(joystickLinearVelocityX, joystickLinearVelocityY, joystickAngularVelocity);
   }
